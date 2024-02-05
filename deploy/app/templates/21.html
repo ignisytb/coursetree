@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="Author" content="">
+  <meta name="Keywords" content="">
+  <meta name="Description" content="">
+  <title>DGIST CourseTree Project</title>
+
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"/>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+  
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-2C0FZL2295"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-2C0FZL2295');
+</script>
+
+
+ </head>
+ <body>
+
+<style type="text/css">
+.selbox1 {
+}
+.selbox1 select {
+  width:250px;
+  overflow:scroll;
+}
+
+.selbox1 select option {
+  font-weight:600;
+}
+
+.selbox1 select option:disabled {
+  font-weight:normal;
+  color:#999;
+}
+
+.cbox {
+  display:inline-block;
+  width:250px;
+}
+.cbox ul {
+  list-style-type: none; margin: 0; padding: 0;
+  border:1px outset #555;
+  overflow:scroll;
+  height:300px;
+  width:240px;
+}
+.cbox li {
+  cursor: grab;
+  margin: 0 3px 3px 3px; padding: 3px; padding-left: 5px;
+  border-bottom:1px solid #999;
+  font-size:13px;
+}
+.cbox li span {
+  display:inline-block;
+  border:1px outset #999;
+  cursor:pointer;
+  color:#c33;
+  padding: 1px 4px 1px 4px;
+  margin-right:4px;
+}
+</style>
+
+<script>
+//0:과목코드	1:과목명	2:학점	3:과목구분(0: 전공, 1:비전공, 2: 비트랙, 3: 비전공, 4: 인문사회필수)	4:공통필수여부	5:개설학기	6:물리학	7:화학	8:생명과학	9:기계공학	10:재료공학	11:전자공학	12:컴퓨터공학	 13:화학공학	14:이학사	15:공학사
+//과목코드	과목명	학점	과목구분(0: 전공, 1: 비트랙, 2: 비전공이공계공통필수, 3: 비전공이공계선택, 4: 인문사회필수, 5: 창업, P: 물리실험, M: 수학, E: 공학, S: 과학, H: 쓰읽말SW)	개설학기	물리학	화학	생명과학	기계공학	재료공학	전자공학	컴퓨터공학	화학공학	이학사	공학사
+var ex_data=`BS102	[1학년] 공학수학 I (3)	3	2	2	0	0	0	0	0	0	0	0	F	F	F
+BS101	[1학년] 다변수 미적분학 (3) [가을]	3	2	1	0	0	0	0	0	0	0	0	F	F	F
+BS103	[1학년] 일반물리 I (3) [봄]	3	2	0	0	0	0	0	0	0	0	0	F	F	F
+BS118	[1학년] 일반화학 I (3) [봄]	3	2	0	0	0	0	0	0	0	0	0	F	F	F
+BS113	[1학년] 일반화학실험 I (1) [가을]	1	2	1	0	0	0	0	0	0	0	0	F	F	F
+BS115	[1학년] 일반생물학 실험 (1)	1	2	2	0	0	0	0	0	0	0	0	F	F	F
+BE101	[1학년] 프로그래밍 (3) [가을]	3	2	1	0	0	0	0	0	0	0	0	F	F	F
+BE202	[2학년] 데이터사이언스기초 (3) [봄]	3	2	0	0	0	0	0	0	0	0	0	F	F	F
+BE201	[2학년] 인공지능기초 (3) [가을]	3	2	1	0	0	0	0	0	0	0	0	F	F	F
+HSS201	인문1 (3)	3	4	2	0	0	0	0	0	0	0	0	F	F	F
+HSS202	인문2 (3)	3	4	2	0	0	0	0	0	0	0	0	F	F	F
+HSS203	인문3 (3)	3	4	2	0	0	0	0	0	0	0	0	F	F	F
+HSS204	인문4 (3)	3	4	2	0	0	0	0	0	0	0	0	F	F	F
+GC101	[1학년] Academic English: Speaking and Correspondence (2) [봄]	2	4	0	0	0	0	0	0	0	0	0	F	F	F
+GC102	[1학년] Academic English: Research and Writing (2) [가을]	2	4	1	0	0	0	0	0	0	0	0	F	F	F
+BS203	[2학년] 선형대수학 (3)	3	M	2	2	0	0	2	0	2	3	0	F	F	F
+BS201	[2학년] 공학수학 II (3)	3	M	2	1	0	0	1	0	1	0	0	F	F	F
+BS202	[2학년] 확률과 통계 및 실습 (3)	3	M	2	1	0	0	0	0	2	2	0	F	F	F
+BS104	[1학년] 일반물리실험 I (1) [봄]	1	P	0	0	0	0	0	0	0	0	0	F	F	F
+BS106	[1학년] 일반물리실험 II (1) [가을]	1	P	1	0	0	0	0	0	0	0	0	F	F	F
+BS105	[1학년] 일반물리 II  (3) [가을]	3	S	1	3	0	0	1	0	3	0	1	F	F	F
+BS119	[1학년] 일반화학 II (3) [가을]	3	S	1	0	3	0	0	3	0	0	3	F	F	F
+BS116	[1학년] 일반생물학 I (3) [봄]	3	3	0	0	0	3	0	0	0	0	0	F	F	F
+BS117	[1학년] 일반생물학 II (3) [가을]	3	S	1	0	0	3	0	0	0	0	0	F	F	F
+BS114	[1학년] 생명과학개론 (3)	3	3	2	3	3	0	3	3	3	3	3	F	F	F
+BE205	[2학년] 회로이론과 계측법(이론) (2) [봄]	2	E	0	2	0	0	1	0	3	0	0	F	F	F
+BE206	[2학년] 회로이론과 계측법(실습) (1) [봄]	1	E	0	2	0	0	1	0	3	0	0	F	F	F
+BE203	[2학년] 창의기계설계 (3) [봄]	3	E	0	0	0	0	3	0	0	0	0	F	F	F
+BE204	[2학년] 화학공학개론 (3) [가을]	3	E	1	0	1	0	0	1	0	0	3	F	F	F
+HSS109	[1학년] 쓰기·읽기·말하기 (3)	3	H	2	0	0	0	0	0	0	0	0	F	F	F
+HSS301	[3학년] Scientific Writing (3)	3	H	2	0	0	0	0	0	0	0	0	F	F	F
+PHY202a	[2학년] [물] 해석역학 (2021년도) (3) [봄]	3	0	0	3	0	0	0	0	0	0	0	T	T	T
+PHY202	[2학년] [물] 해석역학 I (3) [봄]	3	0	0	3	0	0	0	0	0	0	0	T	T	T
+PHY204	[2학년] [물] 해석역학 II (3) [가을]	3	0	1	4	0	0	0	0	0	0	0	T	T	T
+PHY203	[2학년] [물] 전기역학 (3) [가을]	3	0	1	3	0	0	0	0	0	0	0	T	T	T
+PHY307	[3학년] [물] 열 및 통계 물리 (3) [가을]	3	0	1	4	0	0	0	0	0	0	0	T	T	T
+PHY302	[3학년] [물] 현대물리 실험 (2) [봄]	2	0	0	4	0	0	0	0	0	0	0	T	F	T
+PHY304	[3학년] [물] 양자역학 I (3) [봄]	3	0	0	3	0	0	0	0	0	0	0	T	T	T
+PHY306	[3학년] [물] 수리물리 (3) [봄]	3	0	0	2	0	0	0	0	0	0	0	T	F	T
+PHY303	[3학년] [물] 고체물리 I (3) [가을]	3	0	1	2	0	0	0	0	0	0	0	T	T	T
+PHY305	[3학년] [물] 양자역학 II (3) [가을]	3	0	1	2	0	0	0	0	0	0	0	T	T	T
+PHY301	[3학년] [물] 응용물리실험 (2) [가을]	2	0	1	4	0	0	0	0	0	0	0	T	T	T
+PHY403	[4학년] [물] 고체물리 II (3) [봄]	3	0	0	2	0	0	0	0	0	0	0	T	T	T
+PHY401	[4학년] [물] 현대광학 (3) [봄]	3	0	0	2	0	0	0	0	0	0	0	T	T	T
+PHY402	[4학년] [물] 응용물리특론 (3) [가을]	3	0	1	2	0	0	0	0	0	0	0	T	T	T
+PHY404	[4학년] [물] 반도체 소자 물리학 (3) [가을]	3	0	1	2	0	0	0	0	0	0	0	T	T	T
+CHEM206	[2학년] [화] 일반화학실험 II (1) [봄]	1	0	0	0	4	0	0	0	0	0	0	T	F	T
+CHEM205	[2학년] [화] 유기화학 I (3) [봄]	3	0	0	0	3	0	0	2	0	0	4	T	T	T
+CHEM201	[2학년] [화] 분석화학 (3) [봄]	3	0	0	0	3	0	0	2	0	0	2	T	T	T
+CHEM202	[2학년] [화] 무기화학 I (3) [가을]	3	0	1	0	3	0	0	2	0	0	4	T	T	T
+CHEM203	[2학년] [화] 물리화학 I (3) [가을]	3	0	1	0	3	0	0	2	0	0	2	T	T	T
+CHEM204	[2학년] [화] 유기화학 II (3) [가을]	3	0	1	0	3	0	0	0	0	0	2	T	T	T
+CHEM305	[3학년] [화] 물리화학 II (3) [봄]	3	0	0	0	3	0	0	0	0	0	2	T	T	T
+CHEM306	[3학년] [화] 무기화학 II (3) [봄]	3	0	0	0	4	0	0	0	0	0	2	T	T	T
+CHEM301	[3학년] [화] 심화화학실험 I (2) [봄]	2	0	0	0	4	0	0	0	0	0	0	T	F	T
+CHEM302	[3학년] [화] 심화화학실험 II (2) [가을]	2	0	1	0	4	0	0	0	0	0	0	T	F	T
+CHEM303	[3학년] [화] 유기화학 III (3) [가을]	3	0	1	0	2	0	0	0	0	0	2	T	T	T
+CHEM304	[3학년] [화] 물리화학 III (3) [가을]	3	0	1	0	2	0	0	0	0	0	2	T	T	T
+CHEM401	[4학년] [화] 전기화학 (3) [가을]	3	0	1	0	2	0	0	0	0	0	2	T	T	T
+CHEM402	[4학년] [화] 고체화학 I (3) [가을]	3	0	1	0	2	0	0	0	0	0	0	T	F	T
+LS204	[2학년] [생] 세포생물학 (3) [봄]	3	0	0	0	0	3	0	0	0	0	0	T	F	T
+LS203	[2학년] [생] 세포생물학 실험 (3) [봄]	3	0	0	0	0	2	0	0	0	0	0	T	F	T
+LS202	[2학년] [생] 유전학 (3) [가을]	3	0	1	0	0	3	0	0	0	0	0	T	F	T
+LS205	[2학년] [생] 유전학 실험 (3) [가을]	3	0	1	0	0	2	0	0	0	0	0	T	F	T
+LS308	[3학년] [생] 생화학 I (3) [봄]	3	0	0	0	0	3	0	0	0	0	0	T	F	T
+LS304	[3학년] [생] 생명체의 다양성과 유기적 관계 (3) [봄]	3	0	0	0	0	2	0	0	0	0	0	T	F	T
+LS305	[3학년] [생] 신경과학 I (3) [봄]	3	0	0	0	0	2	0	0	0	0	0	T	F	T
+LS301	[3학년] [생] 생명과학특강 I (짝수년도) (3) [봄]	3	0	0	0	0	2	0	0	0	0	0	T	F	T
+LS302	[3학년] [생] 생명과학특강 II (홀수년도) (3) [봄]	3	0	0	0	0	2	0	0	0	0	0	T	F	T
+LS301	[3학년] [생] 생명과학특강 I (홀수년도) (3) [가을]	3	0	1	0	0	2	0	0	0	0	0	T	F	T
+LS302	[3학년] [생] 생명과학특강 II (짝수년도) (3) [가을]	3	0	1	0	0	2	0	0	0	0	0	T	F	T
+LS307	[3학년] [생] 분자생물학 (3) [가을]	3	0	1	0	0	3	0	0	0	0	0	T	F	T
+LS309	[3학년] [생] 생화학 II (3) [가을]	3	0	1	0	0	2	0	0	0	0	0	T	F	T
+LS303	[3학년] [생] 정량 생물과학 (3) [가을]	3	0	1	0	0	2	0	0	0	0	0	T	F	T
+LS310	[3학년] [생] 해부생리학 (3) [가을]	3	0	1	0	0	2	0	0	0	0	0	T	F	T
+LS306	[3학년] [생] 신경과학 II (3) [가을]	3	0	1	0	0	2	0	0	0	0	0	T	F	T
+LS403	[4학년] [생] 발생 및 발달생물학 (3) [봄]	3	0	0	0	0	2	0	0	0	0	0	T	F	T
+LS402	[4학년] [생] 융합생명과학 (3) [봄]	3	0	0	0	0	2	0	0	0	0	0	T	F	T
+LS406	[4학년] [생] 의생명공학 (3) [봄]	3	0	0	0	0	2	0	0	0	0	0	T	T	T
+LS405	[4학년] [생] 생물정보학 (3) [봄]	3	0	0	0	0	2	0	0	0	0	0	T	T	T
+LS401	[4학년] [생] 면역학 (3) [가을]	3	0	1	0	0	2	0	0	0	0	0	T	F	T
+LS407	[4학년] [생] 동물생리학 (3) [가을]	3	0	1	0	0	2	0	0	0	0	0	T	F	T
+LS408	[4학년] [생] 일주기 생체리듬 (3) [가을]	3	0	1	0	0	2	0	0	0	0	0	T	F	T
+LS409	[4학년] [생] 식물 생명과학 (3) [가을]	3	0	1	0	0	2	0	0	0	0	0	T	F	T
+MECH201	[2학년] [기] 고체역학 (3) [봄]	3	0	0	0	0	0	3	0	0	0	0	F	T	T
+MECH202	[2학년] [기] 유체역학 (3) [가을]	3	0	1	0	0	0	3	0	0	0	2	F	T	T
+MECH203	[2학년] [기] 동역학 (3) [가을]	3	0	1	0	0	0	3	0	0	0	0	F	T	T
+MECH305	[3학년] [기] 기계열역학 (3) [봄]	3	0	0	0	0	0	3	0	0	0	0	F	T	T
+MECH309	[3학년] [기] 자동제어시스템 (3) [봄]	3	0	0	0	0	0	3	0	2	0	0	F	T	T
+MECH301	[3학년] [기] 인간과 공학 (3) [봄]	3	0	0	0	0	0	2	0	0	0	0	F	T	T
+MECH306	[3학년] [기] 진동공학 (3) [봄]	3	0	0	0	0	0	2	0	0	0	0	F	T	T
+MECH307	[3학년] [기] 인공지능개론 (3) [가을]	3	0	1	0	0	0	3	0	0	0	0	F	T	T
+MECH302	[3학년] [기] 의공학개론 (3) [가을]	3	0	1	0	0	0	2	0	2	0	0	F	T	T
+MECH304	[3학년] [기] 시스템의 통합적 모델링 (3) [가을]	3	0	1	0	0	0	2	0	2	0	0	F	T	T
+MECH303	[3학년] [기] 기구학 (3) [가을]	3	0	1	0	0	0	2	0	0	0	0	F	T	T
+MECH403	[4학년] [기] 메카트로닉스 (3) [봄]	3	0	0	0	0	0	2	0	0	0	0	F	T	T
+MECH405	[4학년] [기] 열전달 (3) [봄]	3	0	0	0	0	0	2	0	0	0	0	F	T	T
+MECH401	[4학년] [기] 로봇동역학 및 제어 (3) [봄]	3	0	0	0	0	0	2	0	0	0	0	F	T	T
+MECH402	[4학년] [기] 마이크로/나노공학 (3) [봄]	3	0	0	0	0	0	2	0	0	0	0	F	T	T
+MECH40X	[4학년] [기] 기계재료학 (3) [가을]	3	0	1	0	0	0	2	0	0	0	0	T	T	T
+MECH404	[4학년] [기] 공학적설계 (3) [가을]	3	0	1	0	0	0	2	0	0	0	0	F	T	T
+MSE305	[3학년] [재] 재료공학개론 I (3) [봄]	3	0	0	0	2	0	0	3	0	0	0	T	T	T
+MSE302a	[3학년] [재] 재료열역학개론 (2021년도) (3) [봄]	3	0	0	2	0	0	0	3	0	0	0	T	T	T
+MSE304	[3학년] [재] 재료공학실험 (3) [봄]	3	0	0	0	0	0	0	3	0	0	0	F	T	T
+MSE302	[3학년] [재] 재료열역학개론 (3) [가을]	3	0	1	2	0	0	0	3	0	0	0	T	T	T
+MSE306	[3학년] [재] 재료공학개론 II (3) [가을]	3	0	1	0	0	0	0	3	0	0	0	T	T	T
+MSE303	[3학년] [재] 나노재료학 (3) [가을]	3	0	1	0	0	0	0	3	0	0	2	T	T	T
+MSE404a	[4학년] [재] 결정학 및 회절 (2021년도) (3) [봄]	3	0	0	2	2	0	0	3	0	0	0	F	T	T
+MSE402	[4학년] [재] 재료상변태 (3) [봄]	3	0	0	2	0	0	0	3	0	0	0	T	T	T
+MSE405	[4학년] [재] 전자물성학 (3) [봄]	3	0	0	0	0	0	0	2	0	0	0	F	T	T
+MSE406	[4학년] [재] 박막재료공학 (3) [봄]	3	0	0	0	0	0	0	2	0	0	0	T	T	T
+MSE404	[4학년] [재] 결정학 및 회절 (3) [가을]	3	0	1	2	2	0	0	3	0	0	0	F	T	T
+MSE403	[4학년] [재] 전자재료학 (3) [가을]	3	0	1	0	0	0	0	2	0	0	0	F	T	T
+EE201	[2학년] [전] 디지털 논리회로 (3) [가을]	3	0	1	0	0	0	0	0	2	3	0	F	T	T
+EE301	[3학년] [전] 신호 및 시스템 (3) [봄]	3	0	0	0	0	0	0	0	3	0	0	F	T	T
+EE304	[3학년] [전] 반도체물성개론 (3) [봄]	3	0	0	0	0	0	0	0	3	0	0	F	T	T
+EE303	[3학년] [전] 전자회로 이론 (3) [봄]	3	0	0	0	0	0	0	0	3	0	0	F	T	T
+EE302	[3학년] [전] 전자소자개론 (3) [가을]	3	0	1	0	0	0	0	0	3	0	0	F	T	T
+EE305	[3학년] [전] 통신의기초 (3) [가을]	3	0	1	0	0	0	0	0	2	0	0	F	T	T
+EE403	[4학년] [전] 디지털통신 (3) [봄]	3	0	0	0	0	0	0	0	2	0	0	F	T	T
+EE406	[4학년] [전] 지능형제어시스템 (3) [봄]	3	0	0	0	0	0	0	0	2	0	0	F	T	T
+EE404	[4학년] [전] 반도체공정개론 (3) [봄]	3	0	0	0	0	0	0	0	2	0	0	F	T	T
+EE401	[4학년] [전] 디지털 신호처리 (3) [봄]	3	0	0	0	0	0	0	0	2	2	0	F	T	T
+EE405	[4학년] [전] 반도체공정실습 (3) [가을]	3	0	1	0	0	0	0	0	2	0	0	F	T	T
+EE402	[4학년] [전] 디지털 영상처리 (3) [가을]	3	0	1	0	0	0	0	0	2	2	0	T	T	T
+CSE203	[2학년] [컴] 자료구조 (3) [봄]	3	0	0	0	0	0	0	0	2	3	0	T	T	T
+CSE202	[2학년] [컴] 이산수학 (3) [가을]	3	0	1	0	0	0	0	0	2	3	0	T	T	T
+CSE201	[2학년] [컴] 객체지향 프로그래밍 (3) [가을]	3	0	1	0	0	0	0	0	2	3	0	T	T	T
+CSE305	[3학년] [컴] 컴퓨터구조 (3) [봄]	3	0	0	0	0	0	0	0	2	3	0	F	T	T
+CSE306	[3학년] [컴] 시스템 프로그래밍 (3) [봄]	3	0	0	0	0	0	0	0	0	3	0	F	T	T
+CSE302	[3학년] [컴] 기계학습개론 (3) [봄]	3	0	0	0	0	0	0	0	0	2	0	T	T	T
+CSE301	[3학년] [컴] 컴퓨터 알고리즘 (3) [가을]	3	0	1	0	0	0	0	0	0	3	0	T	T	T
+CSE304	[3학년] [컴] 운영체제 (3) [가을]	3	0	1	0	0	0	0	0	2	3	0	F	T	T
+CSE303	[3학년] [컴] 딥러닝개론 (3) [가을]	3	0	1	0	0	0	0	0	2	2	0	F	T	T
+CSE402	[4학년] [컴] 강화학습 (3) [봄]	3	0	0	0	0	0	0	0	2	2	0	T	T	T
+CSE404	[4학년] [컴] 컴퓨터 비전 개론 (3) [봄]	3	0	0	0	0	0	0	0	0	2	0	F	T	T
+CSE401	[4학년] [컴] 데이터베이스개론 (3) [가을]	3	0	1	0	0	0	0	0	0	2	0	F	T	T
+CSE403	[4학년] [컴] 컴퓨터 네트워크 (3) [가을]	3	0	1	0	0	0	0	0	2	2	0	T	T	T
+CE201	[2학년] [화공] 화학공학기초실험 (2) [가을]	2	0	1	0	0	0	0	0	0	0	2	F	T	T
+CE303	[3학년] [화공] 화학공학열역학 (3) [봄]	3	0	0	0	0	0	0	0	0	0	3	F	T	T
+CE302a	[3학년] [화공] 이동현상개론 (2021년도) (3) [봄]	3	0	0	0	0	0	0	0	0	0	3	F	T	T
+CE302	[3학년] [화공] 이동현상개론 (3) [가을]	3	0	1	0	0	0	0	0	0	0	3	F	T	T
+CE301	[3학년] [화공] 반응공학 (3) [가을]	3	0	1	0	0	0	0	0	0	0	3	F	T	T
+CE401	[4학년] [화공] 고분자개론 (3) [봄]	3	0	0	0	2	0	0	0	0	0	2	T	T	T
+CE402	[4학년] [화공] 화학 제품 및 공정설계 (3) [봄]	3	0	0	0	0	0	0	0	0	0	2	F	T	T
+TP101	[1학년] 디자인사고 (3)	3	1	2	0	0	0	0	0	0	0	0	F	F	T
+TP306	[3학년] 산업과 법 (3)	3	1	2	0	0	0	0	0	0	0	0	F	F	T
+TP305	[3학년] 게임이론 (3)	3	1	2	0	0	0	0	0	0	0	0	F	F	T
+TP307	[3학년] UX디자인 (3)	3	1	2	0	0	0	0	0	0	0	0	F	F	T
+TP301	[3학년] 커뮤니케이션과 현대사회 (3)	3	1	2	0	0	0	0	0	0	0	0	F	F	T
+TP311	[3학년] 감성공학과 디자인 (3)	3	1	2	0	0	0	0	0	0	0	0	F	F	T
+TP201	[2학년] 디자인 기획과 전략 (3)	3	1	2	0	0	0	0	0	0	0	0	F	F	T
+TP405	[4학년] 단분자 생물물리학 개론 (3)	3	1	2	0	0	0	0	0	0	0	0	F	F	T
+TP308	[3학년] 생명에 대한 융합적 이해 (3)	3	1	2	0	0	0	0	0	0	0	0	F	F	T
+TP30a	[3학년] 학부생을 위한 해석학 개론 (3)	3	1	2	0	0	0	0	0	0	0	0	F	F	T
+TP30b	[3학년] 현대대수학 개론 (3)	3	1	2	0	0	0	0	0	0	0	0	F	F	T
+TP30c	[3학년] 기하학 개론 (3)	3	1	2	0	0	0	0	0	0	0	0	F	F	T
+TP404	[4학년] 양자 컴퓨팅 개론 (3)	3	1	2	0	0	0	0	0	0	0	0	F	F	T
+ENT301	[3학년] 기업가 정신과 사회적 책임 (3)	3	5	2	0	0	0	0	0	0	0	0	F	F	T
+ENT302	[3학년] 경영학원론 (3)	3	5	2	0	0	0	0	0	0	0	0	F	F	T
+ENT303	[3학년] 하이테크 마케팅 (3)	3	5	2	0	0	0	0	0	0	0	0	F	F	T
+RP301	[3학년] UGRP I (3) [봄]	3	2	0	0	0	0	0	0	0	0	0	F	F	T
+RP302	[3학년] UGRP II (3) [가을]	3	2	1	0	0	0	0	0	0	0	0	F	F	T
+RP201	[2학년] URP (2) [가을]	2	3	1	0	0	0	0	0	0	0	0	F	F	T
+RP407	[4학년] URP (2) [봄]	2	3	0	0	0	0	0	0	0	0	0	F	F	T
+INTERN1	인턴	1	4	2	0	0	0	0	0	0	0	0	F	F	T
+INTERN2	인턴	1	4	2	0	0	0	0	0	0	0	0	F	F	T`;
+
+//0:과목코드	1:과목명	2:학점	3:과목구분(0: 전공, 1:비전공, 2: 비트랙, 3: 비전공, 4: 인문사회필수)	4:공통필수여부	5:개설학기	6:물리학	7:화학	8:생명과학	9:기계공학	10:재료공학	11:전자공학	12:컴퓨터공학	 13:화학공학	14:이학사	15:공학사
+var a_subj0=[]; //원본.
+
+//0:과목코드	1:과목명	2:학점	3:과목구분(0: 전공, 1:비전공, 2: 비트랙, 3: 비전공, 4: 인문사회필수)	4:공통필수여부	5:개설학기	]
+//6:물리학	7:화학	8:생명과학	9:기계공학	10:재료공학	11:전자공학	12:컴퓨터공학	 13:화학공학	14:이학사	15:공학사
+var a_subj=[]; //실행본.
+
+ //[0:고유번호 1:과목명, 2:형태1(0전공,1교양,2기타), 3:형태2(0필수,1선택,2기타)..]
+
+
+function stepOk(step) {
+  var i, fe=document.forms['f1'].elements;
+  
+  if(step==1) {
+    var c=0;
+    for(i=1;i<9;i++) {
+      if(fe['c1_'+i].checked) c++;
+    }
+    if(c<1) { alert("전공 트랙이 선택되지 않았습니다"); return false; }
+    if(c>2) { alert("전공 트랙은 최대 2개까지만 선택하세요"); return false; }
+   
+
+    document.getElementById('step_3').style.display='block';
+    document.getElementById('fdata_a').style.display='block';
+
+    
+    mkData(); //실행배열생성 
+    drawSubj(); //과목록목
+    drawCboxs();//학기별 과목 드로우
+    checkTrack();
+
+    $(".selbox1 select").children().prop("selected",false);
+    $(".selbox1 select").children().click(function(evt) {
+      sel_o=this;
+      $(".selbox1 select").children().prop("selected",false);
+      $(sel_o).prop("selected",true);
+    });
+    const target = document.getElementById('nextbutton');
+    target.disabled = true;
+  }
+  
+}
+
+function re_Run() {
+
+    check = confirm("초기화 하시겠습니까?");
+    if (check) {
+        location.reload();
+    }
+    
+//   getData(' ');
+//   return;
+
+//   var rl;
+//   rl = confirm("모든 CourseTree 항목을 삭제하고 초기화하시겠습니까? 데이터는 복구할 수 없습니다.");
+//   if(rl){
+//     var cookies = document.cookie.split(";");
+
+//     for (var i = 0; i < cookies.length; i++) {
+//         var cookie = cookies[i];
+//         var eqPos = cookie.indexOf("=");
+//         var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+//         document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+//     }
+//   } else {
+//     return false;
+//   }
+  
+}
+
+function drawSubj() {
+  var i, l=a_subj.length, a, s='', s_requiredCourse='', s_selectiveCourse='', s_nonTrack='', s_nonMajorRequired='', s_requiredHSS='', c1=0, c2=0, c3=0, c4=0, c5=0;
+  //s1:전공필수 s2:전공선택 s3:비트랙, s4:비전공, s5:인문사회필수 c1,2,3,4,5:과목목록 갯수
+  //과목구분(0: 전공, 1:비트랙, 2: 비전공이공계공통필수, 3: 비전공이공계선택, 4: 인문사회필수)
+  var s_nonMajorSelective='', s_notMyMajor='', s_experiment='', s_math='', s_engineering='', s_science='', s_writing='', s_enT='';
+  for(i=0;i<l;i++) {
+    a=a_subj[i];
+    var b=a_subj0[i];
+    s='<option value="'+a[0]+'">'+a[1]+'</option>';
+    if(b[3]==0) {
+      if(a[3]>=3) { s_requiredCourse+=s; c1++; //전공필수
+      } else if(a[3]==2) { s_selectiveCourse+=s; c2++; //전공선택
+      } else if(a[3]==0) { s_notMyMajor+=s; c4++;//비전공
+      }
+    }
+    else {
+      if(b[3]==1) { s_nonTrack+=s;
+      } else if(b[3]==2) {s_nonMajorRequired+=s;
+      } else if(b[3]==3) {s_nonMajorSelective+=s;
+      } else if(b[3]==4) {s_requiredHSS+=s;
+      } else if(b[3]=="P") {s_experiment+=s;
+      } else if(b[3]=="M") {s_math+=s;
+      } else if(b[3]=="E") {s_engineering+=s;
+      } else if(b[3]=="S") {s_science+=s;
+      } else if(b[3]=="H") {s_writing+=s;
+      } else if(b[3]==5) {s_enT+=s;
+      }
+    }
+  }
+  
+  $('#requiredCourse').append(s_requiredCourse);//.attr('size',c1);
+  $('#selectiveCourse').append(s_selectiveCourse);//.attr('size',c2);
+  $('#nonTrack').append(s_nonTrack);//.attr('size',c3);
+  $('#nonMajorRequired').append(s_nonMajorRequired);//.attr('size',c4);
+  $('#requiredHSS').append(s_requiredHSS);
+  $('#notMyMajor').append(s_notMyMajor);
+  $('#nonMajorSelective').append(s_nonMajorSelective);
+  $('#experiment').append(s_experiment);
+  $('#math').append(s_math);
+  $('#engineering').append(s_engineering);
+  $('#science').append(s_science);
+  $('#writing').append(s_writing);
+  $('#enT').append(s_enT);
+  
+}
+
+//학기별 선택한 과목목록을 보여주는 박스를 그려줌
+function drawCbox1(n) { //n:학년/학기 구분값
+  var s='';
+  s+='<div class="cbox" id="cbox_'+n+'"><h4>'+Math.floor((n-1)/2+1)+'학년 '+((n%2==1)?1:2)+'학기 <button onclick="addSubj('+n+')">추가+</button><!--button onclick="delSubj('+n+')">삭제-</button--></h4>';
+  s+='<ul></ul>';
+  s+='<div style="text-align:right">해당학기 수강학점: <span id="credit_'+n+'">0</span>/21&nbsp;&nbsp;&nbsp;</div>';
+  s+='<div style="text-align:right">해당학기 수강 전공학점: <span id="majorcredit_'+n+'">0</span>&nbsp;&nbsp;&nbsp;</div>'
+  s+='</div>';
+  return s;
+}
+
+//전체 학기 과목록을 그려줌.
+function drawCboxs() {
+  var i, s='';
+  for(i=1;i<13;i++) {
+    s+=drawCbox1(i);
+  }
+  $('#cbox_a').append(s);
+}
+
+function getSubjIndex(gid) { //고유값에 따른 배열 인덱스 찾기
+  var i, l=a_subj.length;
+  for(i=0;i<l;i++) {
+    if(gid==a_subj[i][0]) { return i; }
+  }
+  return -1;
+}
+
+//과목목록에서 선택된 과목을 학기목록에 추가
+function addSubj(n) {
+  var o=$('.selbox1 select option:selected');
+  if(o==null || !o.val()) { alert('좌측 과목목록에서 과목을 선택하세요'); return false; }
+ // alert('v:'+o.val()+' t:'+o.text());
+  var idx=getSubjIndex(o.val());
+  if(idx<0) return;
+  var gf=a_subj[idx][4];
+  if((n%2) && gf==1) { alert('가을학기 과목은 봄학기에 수강할 수 없습니다.'); return; }
+  if((n%2)==0 && gf==0) { alert('봄학기 과목은 가을학기에 수강할 수 없습니다.'); return; }
+
+  $('#cbox_'+n+' ul').append('<li my-data="'+o.val()+'"><span onclick="delSubj(this,'+n+')">X</span>'+o.text()+'</li>');
+  o.attr("disabled","disabled").prop("selected",false);
+  sumCredit(n);
+  sumMajor(n);
+  sumAllCredit();
+  sumAllMajor();
+}
+
+//학기별 과목목록에서 특정과목을 제거
+function delSubj(obj,n) {
+  var o=$(obj).parent(); //$('#cbox_'+n+' select option:selected');
+  $(".selbox1 select option[value='"+$(o).attr('my-data')+"']").attr('disabled',false);
+  o.remove();
+  sumCredit(n);
+  sumMajor(n);
+  sumAllCredit();
+  sumAllMajor();
+}
+/*
+function delSubj(n) {
+  var o=$('#cbox_'+n+' select option:selected');
+  $(".selbox1 select option[value='"+o.val()+"']").attr('disabled',false);
+  o.remove();
+  sumCredit(n);
+}
+*/
+
+function sumCredit(n) { //n: 학기
+   //과목 리스트얻기
+    var advsum=0, basicsum=0, idx, i, os=$('#cbox_'+n+' ul li'), l=os.length;
+    for(i=0;i<l;i++) {
+      //alert('os.v:'+os[i].value);
+      idx=getSubjIndex($(os[i]).attr('my-data'));
+      //alert('a:'+a);//
+      var adv_tf=a_subj0[idx][15];
+      if(adv_tf=='T'){
+        advsum += +a_subj0[idx][2];
+      } else {
+        basicsum += +a_subj0[idx][2];
+      }
+
+    }
+    var sum=advsum+basicsum;
+    $("#credit_"+n).text(sum);
+   //리스트에 해당하는 과목배열
+   //배열내에 학점 더하기
+   //학점 디스플레이
+   $("#cbox_"+n+" ul").sortable();//"refresh");
+   var BasicAdvArray=[basicsum, advsum, sum];
+   return BasicAdvArray;
+}
+
+function checkTrack() {
+  var i, l=a_subj0.length, a, fe=document.forms['f1'].elements;
+  var fn1=0, fn2=0;
+  for(i=1;i<9;i++) {
+    if(fe['c1_'+i].checked) { 
+      if(fn1<1) fn1=+fe['c1_'+i].value; 
+      else fn2=+fe['c1_'+i].value; 
+    }
+  }
+  var majorArray;
+  majorArray = [+fn1, +fn2];
+  if(fn1==5) {
+    $("#track1name").text("물리학트랙 수강학점: ");
+  } else if(fn1==6) {
+    $("#track1name").text("화학트랙 수강학점: ");
+  } else if(fn1==7) {
+    $("#track1name").text("생명과학트랙 수강학점: ");
+  } else if(fn1==8) {
+    $("#track1name").text("기계공학트랙 수강학점: ");
+  } else if(fn1==9) {
+    $("#track1name").text("재료공학트랙 수강학점: ");
+  } else if(fn1==10) {
+    $("#track1name").text("전자공학트랙 수강학점: ");
+  } else if(fn1==11) {
+    $("#track1name").text("컴퓨터공학트랙 수강학점: ");
+  } else if(fn1==12) {
+    $("#track1name").text("화학공학트랙 수강학점: ");
+  }
+  $("#track1credit").text("0/27");
+  if(fn2>0) {
+    if(fn2==5) {
+      $("#track2name").text("물리학트랙 수강학점: ");
+    } else if(fn2==6) {
+      $("#track2name").text("화학트랙 수강학점: ");
+    } else if(fn2==7) {
+      $("#track2name").text("생명과학트랙 수강학점: ");
+    } else if(fn2==8) {
+      $("#track2name").text("기계공학트랙 수강학점: ");
+    } else if(fn2==9) {
+      $("#track2name").text("재료공학트랙 수강학점: ");
+    } else if(fn2==10) {
+      $("#track2name").text("전자공학트랙 수강학점: ");
+    } else if(fn2==11) {
+      $("#track2name").text("컴퓨터공학트랙 수강학점: ");
+    } else if(fn2==12) {
+      $("#track2name").text("화학공학트랙 수강학점: ");
+    }
+    $("#track2credit").text("0/27");
+    $("#duplicated").text("트랙 간 중복된 학점: ");
+    $("#dupcredit").text("0/27");
+  
+  }
+  return majorArray;  
+}
+
+function sumMajor(n) {
+  var sum1=0, sum2=0, dupsum=0, idx, i, os=$('#cbox_'+n+' ul li'), l=os.length;
+  var track1, track2;
+  track1 = checkTrack()[0];
+  track2 = checkTrack()[1];
+  for(i=0;i<l;i++) {
+      //alert('os.v:'+os[i].value);
+      idx=getSubjIndex($(os[i]).attr('my-data'));
+      //alert('a:'+a);//
+      if(a_subj0[idx][3]==0) {
+        if(a_subj0[idx][track1]>=2) {
+          sum1+=+a_subj[idx][2];
+        }
+        if(track2!=0) {
+          if(a_subj0[idx][track2]>=2) {
+            sum2+=+a_subj[idx][2];
+            if(a_subj0[idx][track1]>=2) {
+              dupsum+=+a_subj[idx][2];
+            }
+          }
+        }
+      }
+    }
+  $("#majorcredit_"+n).text(sum1+sum2-dupsum);
+  var sumArray=[sum1, sum2, dupsum];
+  return sumArray;
+}
+
+function sumAllMajor() {
+  var sum1=0, sum2=0, dupsum=0, i;
+  for(i=1;i<13;i++){
+    sum1+=sumMajor(i)[0];
+    sum2+=sumMajor(i)[1];
+    dupsum+=sumMajor(i)[2];
+  }
+  var s1, s2, s3;
+  var track1, track2;
+  track2 = checkTrack()[1];
+  s1=sum1+"/27";
+  if(track2>0){
+    s2=sum2+"/27";
+    s3=dupsum+"/27";
+  }
+  $("#track1credit").text(s1);
+  $("#track2credit").text(s2);
+  $("#dupcredit").text(s3);
+}
+
+
+
+function sumAllCredit() {
+  var sum=0, basicsum=0, advsum=0, i;
+  for(i=1;i<13;i++){
+    basicsum+=sumCredit(i)[0];
+    advsum+=sumCredit(i)[1];
+    sum+=sumCredit(i)[2];
+  }
+
+  $("#allcredit1").text(sum);
+  $("#allcredit2").text(sum);
+  $("#basiccredit1").text(basicsum);
+  $("#basiccredit2").text(basicsum);
+  $("#advcredit1").text(advsum);
+  $("#advcredit2").text(advsum);
+}
+
+
+
+function saveData() { 
+  //쿠키로 데이타 저장..json 문자열로 저장
+  //테스트로 수강과목만 저장
+  var i, j, s='{';
+  var os=$('.cbox'), l=os.length;
+  for(i=0;i<l;i++) {
+    //os[i].$('.cbox')
+    var o=$('ul',os[i]).children();//$(os[i],'option');
+    s+='g'+(i+1)+':"';
+    for(j=0;j<o.length;j++) {
+      if(j==0){
+        s+=$(o[j]).attr('my-data');
+      } else {
+        s+='|'+$(o[j]).attr('my-data');//value;
+      }
+      
+    }
+    s+='",';
+  }
+  s+='tmp:"" }';
+  // alert('s:'+s);// 3600*24
+  // document.cookie=encodeURIComponent('gdata')+'='+encodeURIComponent(s)+'max-age='+(60*60*24*365)+';path=/;';
+  // alert('ck:'+document.cookie);//
+  // console.log(s);
+  //alert("쿠키 사용을 허용해 주셔야 저장이 가능합니다.");
+  //alert("저장완료");
+  // eval("var d="+s);
+  // alert(d.g1);
+  // var data_g1 = d.g1.split("|");
+  // alert(data_g1);
+	 var fe=document.forms['fdata'].elements;
+   if(fe['email'].value.length<5) { alert('이메일을 입력해 주세요'); return false; }
+   if(fe['pw'].value.length<5) { alert('암호를 5자이상 입력해 주세요'); return false; }
+
+   $.post( "/course/save.php", { mod:'save', email: fe['email'].value, pw: fe['pw'].value, dat: encodeURIComponent(s) })
+    .done(function( data ) {
+      if(data.substr(0,2)=='0:') alert(data.substr(2));
+      else alert( data.substr(2));
+   });
+}
+function isSumZero() {
+  if(sumAllCredit()!=0) { return false;
+  } else { return true;
+  }
+}
+function getData0() {
+	if(isSumZero()==false) {
+    const target = document.getElementById("loadingData");
+    alert('담겨있는 과목이 있으면 불러올 수 없습니다. 과목을 전부 삭제한 이후 불러와주세요.'); return false;
+   } 
+  var fe=document.forms['fdata'].elements;
+   if(fe['email'].value.length<5) { alert('이메일을 입력해 주세요'); return false; }
+   if(fe['pw'].value.length<5) { alert('암호를 5자이상 입력해 주세요'); return false; }
+   
+   var dat='';
+   $.post( "/course/save.php", { mod:'get', email: fe['email'].value, pw: fe['pw'].value, dat: '' })
+    .done(function( data ) {
+      if(data.substr(0,2)=='0:') alert(data.substr(2));
+      else dat=data.split("\n",2)[1];
+      //alert('s:'+dat);
+      getData(dat);
+   });
+}
+
+function getData(dat) {
+
+  var s=decodeURIComponent(dat); //document.cookie);
+  if(s=='' || s==null) {
+    alert('저장된 데이터가 없습니다');
+    return;
+  }
+  s = s.split("max-age")[0];
+  // alert(s);
+  
+
+  eval("var d="+s);
+  var data_g1 = d.g1.split("|");
+  var data_g2 = d.g2.split("|");
+  var data_g3 = d.g3.split("|");
+  var data_g4 = d.g4.split("|");
+  var data_g5 = d.g5.split("|");
+  var data_g6 = d.g6.split("|");
+  var data_g7 = d.g7.split("|");
+  var data_g8 = d.g8.split("|");
+  var data_g9 = d.g9.split("|");
+  var data_g10 = d.g10.split("|");
+  var data_g11 = d.g11.split("|");
+  var data_g12 = d.g12.split("|");
+  data_arr = [data_g1, data_g2, data_g3, data_g4, data_g5, data_g6, data_g7, data_g8, data_g9, data_g10, data_g11, data_g12];
+  var i, data_arr_length = data_arr.length;
+  for(i=0;i<data_arr_length;i++){
+    var j, idx, temp;
+    for(j=0;j<data_arr[i].length;j++) {
+      temp = data_arr[i][j];
+      if(temp==null || temp=='') {
+        continue;
+      }
+      //
+      $('.selbox1 select').val(temp);
+      addSubj(i+1);
+
+    }
+  }
+  
+
+
+  
+
+  
+}
+
+function cvtData() {
+  // 과목코드	과목명	학점	과목구분(0: 전공, 1:비전공, 2: 비트랙, 3: 비전공, 4: 인문사회필수)	공통필수여부	이학사	공학사	물리학	화학	생명과학	기계공학	재료공학	전자공학	컴퓨터공학	화학공학	개설학기
+//0:과목코드	1:과목명	2:학점	3:과목구분(0: 전공, 1:비전공, 2: 비트랙, 3: 비전공, 4: 인문사회필수)	4:공통필수여부	5:개설학기	6:물리학	7:화학	8:생명과학	9:기계공학	10:재료공학	11:전자공학	12:컴퓨터공학	 13:화학공학	14:이학사	15:공학사
+
+  var i, a=ex_data.split("\n"), l=a.length, a1;
+  a_subj0=[];
+
+  for(i=0;i<l;i++) {
+    a_subj0[i]=a[i].split("\t");
+    //[a1[0], a1[1], a1[2], a1[3], a1[4], a1[5], a1[6], a1[7], a1[8], a1[9], a1[10], a1[11], a1[12], a1[13], a1[14], a1[15]];   
+  }
+  //alert('a_sub len:'+a_subj.length+' a[0]:'+a_subj[0]);
+}
+
+function mkData() { //실행본 배열 생성
+   var i, l=a_subj0.length, a, fe=document.forms['f1'].elements;
+   var fn1=0, fn2=0; //전공트랙 배열번호
+
+    for(i=1;i<9;i++) {
+      if(fe['c1_'+i].checked) { 
+        if(fn1<1) fn1=+fe['c1_'+i].value; 
+        else fn2=+fe['c1_'+i].value; 
+      }
+    }
+//6:물리학	7:화학	8:생명과학	9:기계공학	10:재료공학	11:전자공학	12:컴퓨터공학	 13:화학공학	14:이학사	15:공학사
+   var fv1;
+   for(i=0;i<l;i++) {
+     a=a_subj0[i];
+     fv1=a[fn1]; 
+     if(fn2>0) { //전공트랙2가 있을 경우
+       if(a[fn2]>fv1) { fv1=a[fn2]; } //트랙2가 높을 경우 트랙2값으로 대체
+     }
+     a_subj[i]=[a[0],a[1],a[2],fv1,a[4],a[5]];
+   }
+}
+
+var sel_o=null; //마지막에 선택된 과목
+
+$(function() {
+ cvtData();
+// drawSubj();
+// drawCboxs();
+//  getData();//
+ 
+
+ $(".cbox ul").sortable();
+
+});
+
+</script>
+
+<table border="0" width="100%"><tr><td>
+  <h1>DGIST CourseTree Project</h1>
+  <h4>21학번 이후 학생들을 위한 코스트리입니다.</h4>
+  <button type="button" onclick="location.href='https://www.hypark.net/course/20.html';">20학번용 코스트리 바로가기</button>
+  <h4>모바일 환경에선 사용이 불편할 수 있습니다.</h4>
+  <h4>크롬이 아닌 다른 브라우저에서는 사용이 불편할 수 있습니다.</h4>
+</td><td style='text-align:right;'>
+  <br>
+  <div style='text-align:right'>문의는 다음 연락처로 해주세요: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="85f5f7eeedebfcebe2c5e1e2ecf6f1abe4e6abeef7">[email&#160;protected]</a> (기초학부 박한영)</div>
+  <div style='text-align:right'>Last Updated: 6/24, 2022</div>
+</td></tr>
+
+
+
+</table>
+
+
+
+<form name="f1" onsubmit="return false">
+
+<div id="step_1">
+ <h3>전공 트랙 선택 (최대 2개)</h3>
+  <label for="c1_1"><input type="checkbox" name="c1_1" id="c1_1" value="5"/>물리학</label> 
+  <label for="c1_2"><input type="checkbox" name="c1_2" id="c1_2" value="6"/>화학</label> 
+  <label for="c1_3"><input type="checkbox" name="c1_3" id="c1_3" value="7"/>생명과학</label>
+  <label for="c1_4"><input type="checkbox" name="c1_4" id="c1_4" value="8"/>기계공학</label>
+  <label for="c1_5"><input type="checkbox" name="c1_5" id="c1_5" value="9"/>재료공학</label>
+  <label for="c1_6"><input type="checkbox" name="c1_6" id="c1_6" value="10"/>전자공학</label>
+  <label for="c1_7"><input type="checkbox" name="c1_7" id="c1_7" value="11"/>컴퓨터공학</label>
+  <label for="c1_8"><input type="checkbox" name="c1_8" id="c1_8" value="12"/>화학공학</label>
+ <hr/>
+ <button id="nextbutton" onclick="stepOk(1);">다음단계 &gt;</button>
+ <button onclick="re_Run()">초기화</button>
+ <hr/>
+</div><!--/step_1-->
+
+<!-- <div id="step_2" style="display:none;">
+ <h3>수학과목 선택 (1과목 이상 선택)</h3> 
+  <label for="c2_1"><input type="checkbox" name="c2_1" id="c2_1"/>선형대수학</label>
+  <label for="c2_2"><input type="checkbox" name="c2_2" id="c2_2"/>확통</label>
+  <label for="c2_3"><input type="checkbox" name="c2_3" id="c2_3"/>복합공합수학</label>
+  <br/>
+ <h3>기초공학 선택 (1과목 이상 선택)</h3>
+  <label for="c3_1"><input type="checkbox" name="c3_1" id="c3_1"/>회로이론과 계측법</label>
+  <label for="c3_2"><input type="checkbox" name="c3_2" id="c3_2"/>창의기계설계</label>
+  <label for="c3_3"><input type="checkbox" name="c3_3" id="c3_3"/>화학공학개론</label>
+  <br/>
+ <h3>기초과학 선택 (2과목 이상 선택)</h3> 
+  <label for="c4_1"><input type="checkbox" name="c4_1" id="c4_1"/>전자기학</label>
+  <label for="c4_2"><input type="checkbox" name="c4_2" id="c4_2"/>일반화학 II</label>
+  <label for="c4_3"><input type="checkbox" name="c4_3" id="c4_3"/>일반생물학 II</label>
+  <br/>
+ <h3>실험과목 선택 (1과목 이상 선택)</h3>
+  <label for="c5_1"><input type="checkbox" name="c5_1" id="c5_1"/>고전역학실험</label>
+  <label for="c5_2"><input type="checkbox" name="c5_2" id="c5_2"/>전자기학실험</label>
+  <br/>
+  <hr/>
+ <button onclick="stepOk(2)">다음단계 &gt;</button>
+ <hr/>
+</div> -->
+<!--/step_2-->
+
+<div id="step_3" style="display:none;">
+ <table border="0" width="100%"><tr><td>
+  <h3>학기별 과목 담기</h3>
+ <div style="font-size:12px;">
+  과목담기: 좌측에서 과목 선택후 우측 원하는 학기에 [추가]버튼 클릭<br/>
+  과목삭제: 원하는 학기의 과목을 선택후 [삭제]버튼 클릭
+ </div>
+ <div style="font-size:11px;">
+  필수: 해당 트랙은 필수 이수<br>
+  권장: DGIST 교육과정에 명시된 이수 권장 과목<br>
+  추천: 선수과목, 전공필수 과목과의 연관성에 의해 선정했으나 필수는 아닌 추천과목
+ </div>
+</td><td style="text-align:right;">
+  <div style="text-align:right;">수강 기초과목 학점: <span id="basiccredit1">0</span>/58</div>
+  <div style="text-align:right;">수강 심화과목 학점: <span id="advcredit1">0</span>/72</div>
+  <div style="text-align:right;">수강 학점: <span id="allcredit1">0</span>/130</div>
+  <div>
+    <span id="track1name"></span><span id="track1credit"></span><br>
+    <span id="track2name"></span><span id="track2credit"></span><br>
+    <span id="duplicated"></span><span id="dupcredit"></span>
+  </div>
+</td></tr></table>
+ <table border="0" style="border-top:2px dotted #777;margin-top:8px;"><tr><td valign="top" style="vertical-align:top;border-right:2px dotted #777;padding:6px;">
+
+ <div class="selbox1" style="overflow:scroll;height:700px;"><!--과목목록-->
+  <h3>과목목록</h3>
+
+  <h4>비전공 필수과목</h4>
+  <select id="nonMajorRequired" name="sel_8" size="10"></select>  
+
+  <h4>기초과학</h4>
+  <h6>6학점 이상 필수 이수</h6>
+  <p style="font-size:11px;">전자기학: 필수 - 물리학, 전자공학 | 추천 - 기계공학, 재료공학, 화학공학<br>일반화학 II: 필수 - 화학, 재료공학 | 추천 - 화학공학<br>일반생물학 II: 필수 - 생명과학</p>
+  <select id="science" name="sel_1" size="10"></select>  
+
+  <h4>비전공 선택과목</h4>
+  <select id="nonMajorSelective" name="sel_9" size="10"></select>
+
+  <h4>기초공학</h4>
+  <h6>3학점 이상 필수 이수</h6>
+  <p style="font-size:11px;">회로이론과 계측법: 필수 - 전자공학 | 권장 - 물리학<br>창의기계설계: 필수 - 기계공학<br>화학공학개론: 필수 - 화학공학</p>
+  <select id="engineering" name="sel_2" size="10""></select>  
+
+  <h4>수학</h4>
+  <h6>3학점 이상 필수 이수</h6>
+  <p style="font-size:11px;">선형대수학: 필수 - 컴퓨터공학 | 권장 - 물리학, 기계공학, 전자공학<br>확률과 통계 및 실습: 추천 - 물리학 | 권장 - 전자공학, 컴퓨터공학<br>복합공학수학: 추천 - 물리학, 기계공학, 전자공학</p>
+  <select id="math" name="sel_3" size="10"></select>  
+
+  <h4>물리 실험과목</h4>
+  <h6>1학점 이상 필수 이수</h6>
+  <select id="experiment" name="sel_4" size="10"></select>  
+
+  <h4>쓰기·읽기 중점과목 필수</h4>
+  <h6>1학점 이상 필수 이수</h6>
+  <select id="writing" name="sel_5" size="10"></select>
+
+  <h4>전공필수</h4>
+  <h6>선택한 전공에 따라 변동됩니다.</h6>
+  <select id="requiredCourse" name="sel_6" size="10"></select>  
+
+  <h4>전공선택</h4>
+  <h6>선택한 전공에 따라 변동됩니다.</h6>
+  <select id="selectiveCourse" name="sel_7" size="10"></select>  
+
+  
+
+  <h4>비트랙</h4>
+  <h6>6학점 이상 필수 이수</h6>
+  <select id="nonTrack" name="sel_10" size="10"></select>  
+
+  <h4>인문과목</h4>
+  <select id="requiredHSS" name="sel_11" size="10"></select>  
+
+  <h4>창업</h4>
+  <h6>최대 6학점 선택 이수</h6>
+  <select id="enT" name="sel_12" size="10"></select>  
+
+  <h4>타트랙 전공과목</h4>
+  <h6>선택한 전공에 따라 변동됩니다.</h6>
+  <select id="notMyMajor" name="sel_13" size="10"></select>  
+
+ </div>
+
+ </td><td style="vertical-align:top;padding:6px;">
+
+  <h3>학기별 수강과목</h3>
+
+  <div id="cbox_a"></div>
+
+ </td></tr></table>
+
+ 
+
+</div><!-- <!—-step_3—> -->
+
+</form>
+
+<div id="fdata_a" style="display:none;">
+ <form name="fdata" onsubmit="return false;">
+  이메일: <input name="email" type="text"/><br/>
+  암호: <input name="pw" type="password"/><br/>
+  <button onclick="getData0()">저장한 데이터 가져오기</button>
+  <button onclick="saveData()">저장</button>
+ </form>
+</div>
+
+ <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>
